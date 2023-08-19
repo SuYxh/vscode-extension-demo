@@ -21,7 +21,7 @@
       },
       {
         "command": "extension.openWebview",
-        "title": "open WebView"
+        "title": "🚀 启动 ChatGPT"
       },
       {
         "command": "myExtension.optimizeCode",
@@ -32,10 +32,6 @@
         "title": "🚀 解释这段代码"
       },
       {
-        "command": "myExtension.optimizeCode",
-        "title": "🚀 优化这段代码"
-      },
-      {
         "command": "myExtension.questionCode",
         "title": "🚀 说明这段代码可能存在的问题"
       }
@@ -44,7 +40,7 @@
       "editor/context": [
         {
           "command": "extension.openWebview",
-          "group": "navigation@6"
+          "group": "6_gpt@9"
         },
         {
           "when": "editorHasSelection",
@@ -60,12 +56,6 @@
           "when": "editorHasSelection",
           "command": "myExtension.questionCode",
           "group": "6_gpt"
-        }
-      ],
-      "explorer/context": [
-        {
-          "command": "extension.openWebview",
-          "group": "navigation"
         }
       ]
     }

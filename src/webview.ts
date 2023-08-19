@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { showError, getProjectPath, getProjectName, } from './util';
 import { MessageType } from './type';
+import WebViewManager from './WebViewManager';
 
 
 /**
@@ -49,7 +50,7 @@ const messageHandler: any = {
  * @param {*} panel
  * @return {*}
  */
-function sendMsgToWebview(panel: any) {
+function sendMsgToWebview(panel: any, messsage?: any) {
     setTimeout(() => {
         const msgId = Date.now() + '' + Math.round(Math.random() * 100000);
 
@@ -61,7 +62,7 @@ function sendMsgToWebview(panel: any) {
                 text: 'hello'
             }
         }
-        panel.webview.postMessage(msg);
+        panel.webview.postMessage(messsage || msg);
     }, 1000);
 }
 
@@ -115,6 +116,8 @@ function createWebview(context: vscode.ExtensionContext, webviewFilePath: string
     }, undefined, context.subscriptions);
 
     sendMsgToWebview(panel)
+
+    return panel
 }
 
 /**
@@ -123,10 +126,33 @@ function createWebview(context: vscode.ExtensionContext, webviewFilePath: string
  * @return {*}
  */
 export default function registerWebviewCommand(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('extension.openWebview', function (uri) {
+    let sendMsg = undefined
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.openWebview', function (uri, text) {
+
+        console.log('extension.openWebview-uri', uri);
+        console.log('extension.openWebview--text', text);
+
         // 工程目录一定要提前获取，因为创建了webview之后 activeTextEditor 会不准确
         const projectPath = getProjectPath(uri);
         console.log('打开 webview 时候对应的文件路径', projectPath);
-        createWebview(context, 'dist', projectPath)
+        const panel = createWebview(context, 'dist')
+        
+        sendMsg = () => {
+            const msgId = Date.now() + '' + Math.round(Math.random() * 100000);
+
+            const msg: MessageType = {
+                from: 'vscode',
+                msgId,
+                method: 'test',
+                data: `请优化这段代码${uri}`
+            }
+            sendMsgToWebview(panel, msg)
+        }
+
     }));
+
+    return {
+        sendMsg
+    }
 }

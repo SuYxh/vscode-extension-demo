@@ -7,8 +7,18 @@ import path from 'path';
 /**
  * 弹出提示信息
  */
-export function showInfo(info: any) {
-    vscode.window.showInformationMessage(info);
+export function alert(info: string, type?: 'info' | 'error') {
+    type = type ? type : 'info'
+    switch (type) {
+        case 'info':
+            vscode.window.showInformationMessage(info);
+            break;
+        case 'error':
+            vscode.window.showErrorMessage(info);
+            break;
+        default:
+            break;
+    }
 }
 
 export function showError(info: string) {
@@ -24,7 +34,10 @@ export function getAsWebviewUri(webview: Webview, extensionUri: Uri, pathList: s
 }
 
 
-export function getProjectName(projectPath: string) {
+export function getProjectName(projectPath: string | undefined) {
+    if (!projectPath) {
+        return ''
+    }
     return path.basename(projectPath);
 }
 
@@ -37,6 +50,11 @@ export function getProjectPath(document: any) {
         return '';
     }
     const currentFile = (document.uri ? document.uri : document).fsPath;
+
+    if (!currentFile) {
+        return
+    }
+
     let projectPath = null;
 
     // @ts-ignore
@@ -51,7 +69,7 @@ export function getProjectPath(document: any) {
         // return vscode.workspace.rootPath + '/' + this._getProjectName(vscode, document);
     }
     workspaceFolders.forEach(folder => {
-        if (currentFile.indexOf(folder) === 0) {
+        if (currentFile?.indexOf(folder) === 0) {
             projectPath = folder;
         }
     })

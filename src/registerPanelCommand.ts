@@ -1,13 +1,22 @@
 import * as vscode from 'vscode';
 import registerGPTCommand from './registerGPTCommand';
 import sideBarViewPanelCommand from './sideBarViewPanelCommand';
+import { showWebViewInSidebar } from './handleVscodeConfig/vsodeConfig';
+import { SideBarViewProvider } from './sideBarViewPanel';
 
 function registerPanelCommand(context: vscode.ExtensionContext) {
-  // 普通的 webview 视图
-  // registerGPTCommand(context)
+  console.log('showWebViewInSidebar', showWebViewInSidebar());
 
-  // 侧边栏打开 webview 
-  sideBarViewPanelCommand(context)
+  if (showWebViewInSidebar()) {
+    sideBarViewPanelCommand(context)
+  } else {
+    // 获取实例
+    const provider = SideBarViewProvider.getInstance(context)
+
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider(SideBarViewProvider.viewType, provider));
+
+    registerGPTCommand(context)
+  }
 }
 
 export default registerPanelCommand

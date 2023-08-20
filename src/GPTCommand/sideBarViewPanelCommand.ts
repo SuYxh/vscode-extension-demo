@@ -3,7 +3,6 @@ import { SideBarViewProvider } from '../webview/sideBarViewPanel';
 import { alert } from '../util';
 import registerGPTCommand from './commands';
 
-
 export default function sideBarViewPanelCommand(context: vscode.ExtensionContext) {
   // 获取实例
   const provider = SideBarViewProvider.getInstance(context)
@@ -14,7 +13,9 @@ export default function sideBarViewPanelCommand(context: vscode.ExtensionContext
     // 此时只是打开了 webview，页面不一定加载完毕，先把函数缓存起来，等到 页面 加载完毕后 再进行执行，页面加载完毕后，会向 vscode 插件发送 mounted 消息， 此时会去执行缓存的所有方法，清空队列
     // 需要改变一下 this 指向，否则缓存的函数在执行的时候会无法获取到 panel 而报错
     // method, data 是传递给 instance.sendMsgToWebview 方法的参数
-    provider.cacheFunc(provider.sendMsgToWebview.bind(provider), method, data)
+    if (provider.communication) {
+      provider.communication.cacheFunc(provider.communication.sendMsgToWebview.bind(provider.communication), method, data)
+    }
   }
 
 
@@ -24,7 +25,7 @@ export default function sideBarViewPanelCommand(context: vscode.ExtensionContext
     // provider._view?.visible 表示当前侧边栏的 webview 是否可见
     // 如果 webview 可见，直接发消息，否则缓存函数，等待 webview 加载完毕后再发消息
     if (provider._view?.visible) {
-      provider.sendMsgToWebview(method, data)
+      provider.communication && provider.communication.sendMsgToWebview(method, data)
     } else {
       const result = vscode.commands.executeCommand('workbench.view.extension.chat-gpt-view');
       result.then((value) => {

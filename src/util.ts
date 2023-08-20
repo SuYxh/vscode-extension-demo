@@ -3,6 +3,9 @@ import { Uri, Webview } from "vscode";
 import fs from 'fs';
 import path from 'path';
 
+// export function getAsWebviewUri(webview: Webview, extensionUri: Uri, pathList: string[]) {
+//     return webview.asWebviewUri(Uri.joinPath(extensionUri, ...pathList));
+// }
 
 /**
  * 弹出提示信息

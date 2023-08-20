@@ -14,6 +14,24 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chat-gpt-view",
+          "title": "Chat Gpt",
+          "icon": "./image/zz.svg"
+        }
+      ]
+    },
+    "views": {
+      "chat-gpt-view": [
+        {
+          "type": "webview",
+          "id": "chat-gpt-view-id",
+          "name": "Chat Panel"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "vscode-extension-vue.helloWorld",

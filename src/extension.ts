@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import registerGPTCommand from './registerGPTCommand';
+import { SideBarViewProvider } from './sideBarViewPanel';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -12,7 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	// 注册 GPT 相关的命令
-	registerGPTCommand(context)
+	// registerGPTCommand(context)
+
+	// Side Bar View Provider
+	const provider = new SideBarViewProvider(context.extensionUri, context);
+
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(SideBarViewProvider.viewType, provider));
+
 }
 
 export function deactivate() { }

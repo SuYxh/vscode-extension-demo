@@ -34,6 +34,10 @@
     },
     "commands": [
       {
+        "command": "extension.openChatGptView",
+        "title": "Open Chat Gpt View"
+      },
+      {
         "command": "vscode-extension-vue.helloWorld",
         "title": "Hello World"
       },

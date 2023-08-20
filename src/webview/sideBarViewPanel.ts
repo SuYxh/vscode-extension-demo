@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { getAsWebviewUri, showError, alert } from './util';
+import { getAsWebviewUri, showError, alert } from '../util';
 import path from 'path';
 import fs from 'fs';
-import FunctionQueue from './FunctionQueue';
+import FunctionQueue from '../communication/FunctionQueue';
 export interface MessageType {
   from: 'vscode' | 'other' | 'chat-gpt-web'
   msgId: string

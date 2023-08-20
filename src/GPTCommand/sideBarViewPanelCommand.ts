@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
-import { SideBarViewProvider } from './sideBarViewPanel';
-import { alert } from './util';
+import { SideBarViewProvider } from '../webview/sideBarViewPanel';
+import { alert } from '../util';
+import registerGPTCommand from './commands';
+
 
 export default function sideBarViewPanelCommand(context: vscode.ExtensionContext) {
   // 获取实例
@@ -60,58 +62,5 @@ export default function sideBarViewPanelCommand(context: vscode.ExtensionContext
 
   context.subscriptions.push(openWebviewDisposable);
 
-
-  // 注册 优化代码 命令
-  let optimizeCodeDisposable = vscode.commands.registerCommand('myExtension.optimizeCode', () => {
-    const activeTextEditor = vscode.window.activeTextEditor;
-    if (activeTextEditor) {
-      const selectedText = activeTextEditor.document.getText(activeTextEditor.selection);
-      console.log('当前选中的代码', selectedText);
-      const data = `请优化这段代码： ${selectedText}`
-
-      try {
-        handleOpenWebview('test', data)
-      } catch (error) {
-        console.log('优化代码--handleOpenWebview 执行出错', error);
-      }
-    }
-  });
-
-  context.subscriptions.push(optimizeCodeDisposable);
-
-  // 注册 解释代码 命令
-  let explainCodeDisposable = vscode.commands.registerCommand('myExtension.explainCode', () => {
-    const activeTextEditor = vscode.window.activeTextEditor;
-    if (activeTextEditor) {
-      const selectedText = activeTextEditor.document.getText(activeTextEditor.selection);
-      console.log('当前选中的代码', selectedText);
-      const data = `请详细解释一下这段代码： ${selectedText}`
-
-      try {
-        handleOpenWebview('test', data)
-      } catch (error) {
-        console.log('解释代码 -- handleOpenWebview 执行出错', error);
-      }
-    }
-  });
-
-  context.subscriptions.push(explainCodeDisposable);
-
-  // 注册 说明这段代码可能存在的问题 命令
-  let questionCodeDisposable = vscode.commands.registerCommand('myExtension.questionCode', () => {
-    const activeTextEditor = vscode.window.activeTextEditor;
-    if (activeTextEditor) {
-      const selectedText = activeTextEditor.document.getText(activeTextEditor.selection);
-      console.log('当前选中的代码', selectedText);
-      const data = `说明这段代码可能存在的问题： ${selectedText}`
-
-      try {
-        handleOpenWebview('test', data)
-      } catch (error) {
-        console.log('选中代码 -- handleOpenWebview 执行出错', error);
-      }
-    }
-  });
-
-  context.subscriptions.push(questionCodeDisposable);
+  registerGPTCommand(context, handleOpenWebview)
 } 

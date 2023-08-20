@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import registerPanelCommand from './registerPanelCommand';
-// import onDidChangeConfiguration from './onDidChangeConfiguration';
+import registerPanelCommand from './GPTCommand/index';
 import onDidChangeConfiguration from './handleVscodeConfig/onDidChangeConfiguration';
 
 export function activate(context: vscode.ExtensionContext) {

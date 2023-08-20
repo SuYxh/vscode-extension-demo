@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import CommonWebview from './webview/CommonWebview';
-import { getProjectPath } from './util';
-import _registerGPTCommand from './GPTCommand/index';
+import CommonWebview from '../webview/CommonWebview';
+import { getProjectPath, alert } from '../util';
+import _registerGPTCommand from './commands';
 
 
 export default function registerGPTCommand(context: vscode.ExtensionContext) {
@@ -77,13 +77,23 @@ export default function registerGPTCommand(context: vscode.ExtensionContext) {
       const projectPath = getProjectPath(uri);
       console.log('打开 webview 时候对应的文件路径', projectPath);
 
+      if (instance.getPanel()) {
+        alert('GPT 已经启动啦')
+        return
+      }
+
       instance.createWebView(context, 'dist', projectPath)
     } else {
+      if (instance.getPanel()) {
+        alert('GPT 已经启动啦')
+        return
+      }
+
       instance.createWebView(context, 'dist')
     }
   })
 
   context.subscriptions.push(openWebviewDisposable);
- 
+
   _registerGPTCommand(context, handleOpenWebview)
 } 

@@ -25,22 +25,40 @@ class WebViewManager {
   private messageHandler: CallbacksType
   private projectPath: string | undefined
   private fnQueue: FunctionQueue
+  // 销毁已经创建的实例
+  private _destroyInstance: Function
 
-  private constructor() {
+  private constructor(destroyInstance: Function) {
     this.messageHandler = this.getMessageHandler()
     // 缓存函数的队列
     this.fnQueue = new FunctionQueue()
+
+    this._destroyInstance = destroyInstance
   }
 
   /**
    * @description: 获取实例
    * @return {*}
-   */  
-  public static getInstance(): WebViewManager {
+   */
+  public static getInstance(destroyInstance: Function): WebViewManager {
     if (!WebViewManager.instance) {
-      WebViewManager.instance = new WebViewManager();
+      WebViewManager.instance = new WebViewManager(destroyInstance);
     }
     return WebViewManager.instance;
+  }
+
+  /**
+  * @description: 关闭 webview，然后清空实例
+  * @return {*}
+  */
+  public destroyInstance() {
+    WebViewManager.instance = null; // 将单例实例置为null
+
+    this._destroyInstance()
+
+    setTimeout(() => {
+      this.panel?.dispose(); // 销毁Webview面板
+    }, 1000);
   }
 
   /**
@@ -49,7 +67,7 @@ class WebViewManager {
    * @param {number} code
    * @param {string} msg
    * @return {*}
-   */  
+   */
   public genRes(resp: any, code?: number, msg?: string) {
     code = code ? code : 200
     msg = msg ? msg : ''
@@ -63,7 +81,7 @@ class WebViewManager {
   /**
    * @description: 事件集合
    * @return {*}
-   */  
+   */
   public getMessageHandler() {
     const _this = this
     return {
@@ -97,7 +115,7 @@ class WebViewManager {
   /**
    * @description: 生成 消息 id
    * @return {*}
-   */  
+   */
   public getMsgId() {
     return Date.now() + '' + Math.round(Math.random() * 100000);
   }
@@ -192,6 +210,12 @@ class WebViewManager {
         showError(`该端未实现 ${message.method} 方法！`);
       }
 
+    }, undefined, context.subscriptions);
+
+    this.panel.onDidDispose(() => {
+      // 在Webview面板关闭时执行的逻辑
+      console.log('在Webview面板关闭时执行的逻辑');
+      this.destroyInstance()
     }, undefined, context.subscriptions);
 
     /** 

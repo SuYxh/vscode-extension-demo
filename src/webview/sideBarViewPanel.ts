@@ -47,6 +47,26 @@ export class SideBarViewProvider implements vscode.WebviewViewProvider {
     return SideBarViewProvider.instance;
   }
 
+  /**
+* @description: 关闭 webview，然后清空实例
+* @return {*}
+*/
+  public destroyInstance() {
+    // 将单例实例置为null
+    SideBarViewProvider.instance = null;
+
+    // 销毁通信的实例
+    this.communication?.destroyInstance()
+    this.communication = null
+  }
+
+
+  public startListen() {
+    if (this._view) {
+      this.communication = new Communication(this._view.webview)
+    }
+  }
+
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -80,7 +100,25 @@ export class SideBarViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = updatedHtmlContent
 
-    this.communication = Communication.getInstance(webviewView.webview)
+    // this.communication = Communication.getInstance(webviewView.webview)
+    // this.communication = new Communication(webviewView.webview)
+    this.startListen()
+    console.log('开启监听啦 ---------', this.communication);
+
+    webviewView.onDidChangeVisibility(() => {
+      console.log('onDidChangeVisibility-->', this._view?.visible);
+
+      // 如果面板被隐藏起来就销毁
+      if (!this._view?.visible) {
+        // 面板被隐藏的时候 销毁 通信实例
+        this.destroyInstance()
+      } else {
+        // 面板出现的时候 重新创建 通信实例
+        // this.communication = Communication.getInstance(webviewView.webview)
+        // this.communication = new Communication(webviewView.webview)
+        this.startListen()
+      }
+    })
   }
 
   /**

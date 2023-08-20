@@ -109,7 +109,9 @@ class WebViewManager {
     this.panel.webview.html = updatedHtmlContent;
 
     // 监听发来的消息， MessageType 是约定好的
-    this.communication = Communication.getInstance(this.panel.webview)
+    // this.communication = Communication.getInstance(this.panel.webview)
+    this.communication = new Communication(this.panel.webview)
+
 
     this.panel.onDidDispose(() => {
       // 在Webview面板关闭时执行的逻辑

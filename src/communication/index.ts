@@ -22,7 +22,7 @@ class Communication {
   private fnQueue: FunctionQueue
   public webview: vscode.Webview
 
-  private constructor(webview: vscode.Webview) {
+  public constructor(webview: vscode.Webview) {
     this.webview = webview
     this.messageHandler = this.getMessageHandler()
     // 缓存函数的队列

@@ -13,6 +13,9 @@ export default function sideBarViewPanelCommand(context: vscode.ExtensionContext
     // 此时只是打开了 webview，页面不一定加载完毕，先把函数缓存起来，等到 页面 加载完毕后 再进行执行，页面加载完毕后，会向 vscode 插件发送 mounted 消息， 此时会去执行缓存的所有方法，清空队列
     // 需要改变一下 this 指向，否则缓存的函数在执行的时候会无法获取到 panel 而报错
     // method, data 是传递给 instance.sendMsgToWebview 方法的参数
+
+
+
     if (provider.communication) {
       provider.communication.cacheFunc(provider.communication.sendMsgToWebview.bind(provider.communication), method, data)
     }

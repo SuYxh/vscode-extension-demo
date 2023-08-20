@@ -6,6 +6,23 @@ import path from 'path';
 // export function getAsWebviewUri(webview: Webview, extensionUri: Uri, pathList: string[]) {
 //     return webview.asWebviewUri(Uri.joinPath(extensionUri, ...pathList));
 // }
+export function genRes(resp: any, code?: number, msg?: string) {
+    code = code ? code : 200
+    msg = msg ? msg : ''
+    return {
+        code,
+        msg,
+        data: resp
+    }
+}
+
+/**
+  * @description: 生成 消息 id
+  * @return {*}
+  */
+export function getMsgId() {
+    return Date.now() + '' + Math.round(Math.random() * 100000);
+}
 
 /**
  * 弹出提示信息

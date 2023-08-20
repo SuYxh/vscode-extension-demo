@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import WebViewManager from './WebViewManager';
+import CommonWebview from './webview/CommonWebview';
 import { getProjectPath } from './util';
 
 
 export default function registerGPTCommand(context: vscode.ExtensionContext) {
   // 获取实例
-  let instance = WebViewManager.getInstance(destroyInstance)
+  let instance = CommonWebview.getInstance(destroyInstance)
 
   function destroyInstance() {
     // @ts-ignore
@@ -22,7 +22,12 @@ export default function registerGPTCommand(context: vscode.ExtensionContext) {
     // 此时只是打开了 webview，页面不一定加载完毕，先把函数缓存起来，等到 页面 加载完毕后 再进行执行，页面加载完毕后，会向 vscode 插件发送 mounted 消息， 此时会去执行缓存的所有方法，清空队列
     // 需要改变一下 this 指向，否则缓存的函数在执行的时候会无法获取到 panel 而报错
     // method, data 是传递给 instance.sendMsgToWebview 方法的参数
-    instance.cacheFunc(instance.sendMsgToWebview.bind(instance), method, data)
+    console.log('handlePreSendMsg', instance.communication);
+    console.log('handlePreSendMsg--cacheFunc', instance.communication && instance.communication.cacheFunc);
+
+    if (instance.communication) {
+      instance.communication.cacheFunc(instance.communication.sendMsgToWebview.bind(instance.communication), method, data)
+    }
   }
 
   /**
@@ -32,10 +37,14 @@ export default function registerGPTCommand(context: vscode.ExtensionContext) {
    * @return {*}
    */
   function handleOpenWebview(method: string, data: string) {
+    console.log('-- handleOpenWebview --', instance, instance && instance.getPanel());
+
     // 判断一下是否已经打开了 webview，如果是直接发送消息即可
     if (instance && instance.getPanel()) {
       // test 是方法名称，约定好的
-      instance.sendMsgToWebview(method, data)
+      if (instance.communication) {
+        instance.communication.sendMsgToWebview(method, data)
+      }
     } else {
       // webview 没有打开的时，执行 extension.openWebview 命令 打开 webview
       const result = vscode.commands.executeCommand('extension.openWebview')
@@ -59,7 +68,7 @@ export default function registerGPTCommand(context: vscode.ExtensionContext) {
 
     // 退出登录后, 再次选择菜单 解释这段代码 时，instance 被清理掉，需要打开  新的webview， 此时还需要在重新生成一下实例
     if (!instance) {
-      instance = WebViewManager.getInstance(destroyInstance)
+      instance = CommonWebview.getInstance(destroyInstance)
     }
 
     if (uri && uri.path) {
@@ -96,7 +105,12 @@ export default function registerGPTCommand(context: vscode.ExtensionContext) {
       const selectedText = activeTextEditor.document.getText(activeTextEditor.selection);
       console.log('当前选中的代码', selectedText);
       const data = `请详细解释一下这段代码： ${selectedText}`
-      handleOpenWebview('test', data)
+
+      try {
+        handleOpenWebview('test', data)
+      } catch (error) {
+        console.log('解释代码 -- handleOpenWebview', error);
+      }
     }
   });
 
